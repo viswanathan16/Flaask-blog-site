@@ -1,0 +1,48 @@
+# .dockerignore
+# This file tells Docker which files to exclude when building/running containers
+# Smaller context = faster builds and smaller images
+
+# Git files - not needed inside container
+.git
+.gitignore
+.gitattributes
+
+# Documentation - not needed for running the app
+README.md
+LICENSE
+*.md
+
+# Python cache and compiled files - will be regenerated inside container
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments - container has its own Python environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE and editor files - developer tools, not needed in container
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker files - don't need these inside the container
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Database files - using volume for persistence, don't copy local db
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files - sensitive data shouldn't be in image
+.env
+.env.local
