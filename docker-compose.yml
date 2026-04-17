@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Flask blog application service
+  flask-blog:
+    # Use official Python 3.11 slim image directly from Docker Hub
+    # No Dockerfile needed - we'll install dependencies and run the app using command
+    image: python:3.11-slim
+    
+    # Container name for easy identification
+    container_name: flask-blog-app
+    
+    # Port mapping: host_port:container_port
+    # Access the app at http://localhost:5000
+    ports:
+      - "5000:5000"                 # Map port 5000 on host to port 5000 in container
+    
+    # Mount the current directory to /app in the container
+    # This allows the container to access our application code
+    # Also mount a named volume for persistent SQLite database storage
+    volumes:
+      - ./:/app                     # Mount current directory to /app (application code)
+      - blog-data:/data             # Named volume 'blog-data' mounted to /data in container
+                                    # SQLite database file (blog.db) will be stored here
+    
+    # Set working directory inside the container
+    working_dir: /app               # All commands will run from /app directory
+    
+    # Command to run when container starts
+    # Step 1: Install dependencies from requirements.txt
+    # Step 2: Run the Flask application
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             python app.py"
+    
+    # Restart policy: always restart the container if it stops
+    restart: unless-stopped
+    
+    # Environment variables
+    environment:
+      - FLASK_ENV=development       # Set Flask to development mode for better error messages
+      - PYTHONUNBUFFERED=1          # Prevent Python from buffering stdout/stderr (see logs immediately)
+
+# Named volumes definition
+# This is where Docker stores persistent data on the host system
+volumes:
+  blog-data:
+    driver: local                   # Use local storage driver (default)
+    # Data location on host: /var/lib/docker/volumes/<project-name>_blog-data/_data
+    # This volume persists even when containers are removed
